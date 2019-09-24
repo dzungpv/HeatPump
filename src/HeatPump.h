@@ -78,6 +78,7 @@ struct heatpumpStatus {
   bool operating; // if true, the heatpump is operating to reach the desired temperature
   heatpumpTimers timers;
   int compressorFrequency;
+  int autoModeOperation;
 };
 
 class HeatPump
@@ -114,6 +115,7 @@ class HeatPump
     const int RCVD_PKT_UPDATE_SUCCESS  = 4;
     const int RCVD_PKT_STATUS          = 5;
     const int RCVD_PKT_TIMER           = 6;
+	const int RCVD_PKT_AUTO_OPERATION  = 7;
 
     const byte CONTROL_PACKET_1[5] = {0x01,    0x02,  0x04,  0x08, 0x10};
                                    //{"POWER","MODE","TEMP","FAN","VANE"};
@@ -218,6 +220,7 @@ class HeatPump
     heatpumpStatus getStatus();
     float getRoomTemperature();
     bool getOperating();
+	int getAutoModeOperation();
 
     // helpers
     float FahrenheitToCelsius(int tempF);

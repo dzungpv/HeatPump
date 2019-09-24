@@ -312,6 +312,10 @@ bool HeatPump::getOperating() {
   return currentStatus.operating;
 }
 
+int HeatPump::getAutoModeOperation() {
+  return currentStatus.autoModeOperation;
+}
+
 float HeatPump::FahrenheitToCelsius(int tempF) {
   float temp = (tempF - 32) / 1.8;                
   return ((float)round(temp*2))/2;                 //Round to nearest 0.5C
@@ -669,7 +673,20 @@ int HeatPump::readPacket() {
             }
 
             case 0x09: { // standby mode maybe?
-              break;
+			  //Only in "Auto" mode is shows what the unit is doing
+			  if (receivedStatus && currentSettings.mode=="AUTO"){
+			   receivedStatus.autoModeOperation = data[10]; 
+               //0x01 is cool
+               //0x02 is heat
+               // callback for status change -- not triggered for compressor frequency at the moment
+                if(statusChangedCallback && currentStatus.autoModeOperation != receivedStatus.autoModeOperation) {
+				  currentStatus.autoModeOperation = receivedStatus.autoModeOperation;
+				  statusChangedCallback(currentStatus);
+				}else {
+				  currentStatus.autoModeOperation = receivedStatus.autoModeOperation;
+				}			   
+			  }
+              return RCVD_PKT_AUTO_OPERATION;
             }
           } 
         } 
